@@ -1,0 +1,40 @@
+# Centuria shared Ruff config.
+# Consumers: `extend = "https://..."` pointing at a raw GitHub URL pinned to a tag.
+
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = [
+  "E",     # pycodestyle errors
+  "F",     # pyflakes
+  "W",     # pycodestyle warnings
+  "I",     # isort
+  "B",     # flake8-bugbear
+  "UP",    # pyupgrade
+  "SIM",   # flake8-simplify
+  "RUF",   # ruff-specific
+  "PERF",  # perflint
+  "FURB",  # refurb
+  "PL",    # pylint (selected)
+  "S",     # flake8-bandit (security)
+  "TID",   # flake8-tidy-imports
+  "N",     # pep8-naming
+  "ANN",   # flake8-annotations
+  "ASYNC", # flake8-async
+]
+ignore = [
+  "ANN101",  # self type annotation (obsolete in 3.11+)
+  "ANN102",  # cls type annotation
+  "PLR0913", # too many arguments (handled case-by-case)
+  "PLR2004", # magic values (often unavoidable in tests)
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "ANN"]  # asserts + untyped ok in tests
+"**/__init__.py" = ["F401"]    # re-exports
+
+[format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "lf"
