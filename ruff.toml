@@ -1,5 +1,7 @@
 # Centuria shared Ruff config.
 # Consumers: `extend = "https://..."` pointing at a raw GitHub URL pinned to a tag.
+# Note: Ruff <0.16 does not resolve HTTPS in `extend`; vendor this file locally
+#   and refresh on new tags. Tracked upstream: astral-sh/ruff issues.
 
 target-version = "py311"
 line-length = 100
@@ -28,11 +30,33 @@ ignore = [
   "ANN102",  # cls type annotation
   "PLR0913", # too many arguments (handled case-by-case)
   "PLR2004", # magic values (often unavoidable in tests)
+  "PLC0415", # imports not at top — allows intentional lazy imports
+             #   for heavy ML deps (torch, whisper, transformers) and
+             #   optional-feature gating. Keep `I` (isort) for order.
 ]
 
 [lint.per-file-ignores]
 "tests/**" = ["S101", "ANN"]  # asserts + untyped ok in tests
 "**/__init__.py" = ["F401"]    # re-exports
+
+[lint.flake8-bugbear]
+# FastAPI's Depends/Query/Path/Body/Header/Form/File/Cookie are called in
+# function defaults by design (dependency-injection). Without these entries,
+# every FastAPI handler trips B008 ("function-call-in-default-argument").
+# Also add Typer's typer.Argument/typer.Option for the same reason.
+extend-immutable-calls = [
+  "fastapi.Depends",
+  "fastapi.Query",
+  "fastapi.Path",
+  "fastapi.Body",
+  "fastapi.Header",
+  "fastapi.Form",
+  "fastapi.File",
+  "fastapi.Cookie",
+  "fastapi.Security",
+  "typer.Argument",
+  "typer.Option",
+]
 
 [format]
 quote-style = "single"
